@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - multiple views</title>
+		<title>ICG Project</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="main.css">
@@ -151,8 +151,8 @@
 					dirLight.position.set( 10, 10, 5 );
 					scene.add( dirLight );
 
-					const axesHelper = new THREE.AxesHelper( 3 );
-					scene.add( axesHelper );
+					//const axesHelper = new THREE.AxesHelper( 3 );
+					//scene.add( axesHelper );
 
 					//const glftLoader = new GLTFLoader();
 					//glftLoader.load('Tree/scene.gltf', function(gltf) {
@@ -290,18 +290,30 @@
 					}
 				}
 
-				function createWheelMesh(radius, width) {
+				function createWheelMesh(radius, width, num) {
 					var t = new THREE.CylinderGeometry(radius, radius, width, 24, 1);
 					t.rotateZ(Math.PI / 2);
-					var mesh = new THREE.Mesh(t, materialInteractive);
-					mesh.add(new THREE.Mesh(new THREE.BoxGeometry(width * 1.5, radius * 1.75, radius*.25, 1, 1, 1), materialInteractive));
+					if(num == 0){
+						console.log("0");
+						var material = new THREE.MeshPhongMaterial( { color:0x008000 } );
+					} else {
+						var material = materialInteractive;
+					}
+					var mesh = new THREE.Mesh(t, material);
+					mesh.add(new THREE.Mesh(new THREE.BoxGeometry(width * 1.5, radius * 1.75, radius*.25, 1, 1, 1), material));
 					scene.add(mesh);
 					return mesh;
 				}
 
-				function createChassisMesh(w, l, h) {
+				function createChassisMesh(w, l, h, num) {
 					var shape = new THREE.BoxGeometry(w, l, h, 1, 1, 1);
-					var mesh = new THREE.Mesh(shape, materialInteractive);
+					if(num == 0){
+						console.log("0");
+						var material = new THREE.MeshPhongMaterial( { color:0x008000 } );
+					} else {
+						var material = materialInteractive;
+					}
+					var mesh = new THREE.Mesh(shape, material);
 					scene.add(mesh);
 					return mesh;
 				}
@@ -351,7 +363,7 @@
 					var body = new Ammo.btRigidBody(new Ammo.btRigidBodyConstructionInfo(massVehicle, motionState, geometry, localInertia));
 					body.setActivationState(DISABLE_DEACTIVATION);
 					physicsWorld.addRigidBody(body);
-					var chassisMesh = createChassisMesh(chassisWidth, chassisHeight, chassisLength);
+					var chassisMesh = createChassisMesh(chassisWidth, chassisHeight, chassisLength, num);
 
 					// Raycast Vehicle
 					var engineForce = 0;
@@ -389,7 +401,7 @@
 						wheelInfo.set_m_frictionSlip(friction);
 						wheelInfo.set_m_rollInfluence(rollInfluence);
 					
-						wheelMeshes[index] = createWheelMesh(radius, width);
+						wheelMeshes[index] = createWheelMesh(radius, width,num);
 					}
 
 					addWheel(true, new Ammo.btVector3(wheelHalfTrackFront, wheelAxisHeightFront, wheelAxisFrontPosition), wheelRadiusFront, wheelWidthFront, FRONT_LEFT);
