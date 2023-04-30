@@ -9,6 +9,60 @@
 	<body>
 
 		<div id="container"></div>
+		<div id="time1">0:0:0</div>
+		<div id="time2">0:0:0</div>
+		<div id="speed1">0 km/h</div>
+		<div id="speed2">0 km/h</div>
+
+		<style>
+			body {
+                color: #61443e;
+                font-family:Monospace;
+                font-size:13px;
+                text-align:center;
+
+                background-color: #bfd1e5;
+                margin: 0px;
+                overflow: hidden;
+            }
+			#speed1 {
+				color: #ffffff;
+				background-color: #990000;
+				position: absolute;
+				top: 0px;
+				padding: 5px;
+			}
+			#speed2 {
+				color: #ffffff;
+				background-color: #990000;
+				position: absolute;
+				top: 0px;
+				right: 0px;
+				padding: 5px;
+			}
+			#time1 {
+				color: #ffffff;
+				background-color: #990000;
+				position: absolute;
+				top: 30px;
+				left: 0px;
+				padding: 5px;
+			}
+			#time2 {
+				color: #ffffff;
+				background-color: #990000;
+				position: absolute;
+				top: 30px;
+				right: 0px;
+				padding: 5px;
+			}
+			#t
+
+            a {
+
+                color: #a06851;
+            }
+		</style>
 
 		<!-- Import maps polyfill -->
 		<!-- Remove this when import maps will be widely supported -->
@@ -33,6 +87,7 @@
 			import Stats from 'three/addons/libs/stats.module.js';
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 			
 
 			Ammo().then(function(Ammo) {
@@ -63,7 +118,13 @@
 				let skyboxGeo = new THREE.BoxGeometry( 1000, 1000, 1000 );
 				let skybox = new THREE.Mesh( skyboxGeo, materialArray );
 
-				var speedometer;
+				var speed1,speed2;
+
+				var time1,time2;
+
+				var vehicle1, vehicle2;
+
+				var clock = new THREE.Clock();
 
 				var terrainMesh, texture;
 				var clock = new THREE.Clock();
@@ -121,12 +182,42 @@
 					},
 				];
 
+				var tree;
+
+				var lx;
+				var ly;
+				var lz;
+
+				var lx1;
+				var ly1;
+				var lz1;
+
+				let hour = 0;
+				let minute = 0;
+				let second = 0;
+				let millisecond = 0;
+
+				let cron;
+
+				let hour1 = 0;
+				let minute1 = 0;
+				let second1 = 0;
+				let millisecond1 = 0;
+
+				let cron1;
+
 				//init();
 				//animate();
 
 				function init() {
 
 					const container = document.getElementById( 'container' );
+
+					time1 = document.getElementById( 'time1' );
+					time2 = document.getElementById( 'time2' );
+
+					speed1 = document.getElementById( 'speed1' );
+					speed2 = document.getElementById( 'speed2' );
 
 					for ( let ii = 0; ii < views.length; ++ ii ) {
 
@@ -155,10 +246,9 @@
 					//scene.add( axesHelper );
 
 					//const glftLoader = new GLTFLoader();
-					//glftLoader.load('Tree/scene.gltf', function(gltf) {
-					//	gltf.scene.position.set(-10,0,0);
-					//	gltf.scene.scale.set(0.025,0.025,0.025);
-					//	scene.add(gltf.scene);
+					//glftLoader.load('Tree1/scene.gltf', function(gltf) {
+					//	gltf.scene.scale.set(1,1,1);
+					//	tree = gltf.scene;
 					//});
 //
 					//const glftLoader1 = new GLTFLoader();
@@ -167,6 +257,19 @@
 					//	gltf.scene.rotation.y = Math.PI / 2;
 					//	gltf.scene.scale.set(1,1,1);
 					//	scene.add(gltf.scene);
+					//});
+
+					//const fbxLoader = new FBXLoader();
+					//fbxLoader.load('Oak_Tree.fbx', function(object) {
+					//	object.traverse(function(child) {
+					//		if(child.isMesh) {
+					//			child.castShadow = true;
+					//			child.receiveShadow = true;
+					//		}
+					//	});
+					//	object.position.set(-10,0,0);
+					//	object.scale.set(0.025,0.025,0.025);
+					//	scene.add(object);
 					//});
 
 					scene.add(skybox);
@@ -364,6 +467,11 @@
 					body.setActivationState(DISABLE_DEACTIVATION);
 					physicsWorld.addRigidBody(body);
 					var chassisMesh = createChassisMesh(chassisWidth, chassisHeight, chassisLength, num);
+					if(num == 0){
+						vehicle1 = chassisMesh;
+					} else {
+						vehicle2 = chassisMesh;
+					}
 
 					// Raycast Vehicle
 					var engineForce = 0;
@@ -413,8 +521,14 @@
 					function sync(dt) {
 					
 						var speed = vehicle.getCurrentSpeedKmHour();
+
+						if(num==0){
+							speed1.innerHTML = (speed < 0 ? '(R) ' : '') + Math.abs(speed).toFixed(1) + ' km/h';
+						} else {
+							speed2.innerHTML = (speed < 0 ? '(R) ' : '') + Math.abs(speed).toFixed(1) + ' km/h';
+						}
 					
-						//speedometer.innerHTML = (speed < 0 ? '(R) ' : '') + Math.abs(speed).toFixed(1) + ' km/h';
+						
 					
 						breakingForce = 0;
 						engineForce = 0;
@@ -547,6 +661,48 @@
 
 				}
 
+				function start() {
+				  cron = setInterval(() => { timer(); }, 10);
+				}
+
+				function reset(){
+					minute = 0;
+					second = 0;
+					millisecond = 0;
+				}
+
+				function timer() {
+  					if ((millisecond += 10) == 1000) {
+  					  millisecond = 0;
+  					  second++;
+  					}
+  					if (second == 60) {
+  					  second = 0;
+  					  minute++;
+  					}
+				}
+
+				function start1() {
+				  cron1 = setInterval(() => { timer1(); }, 10);
+				}
+
+				function reset1(){
+					minute1 = 0;
+					second1 = 0;
+					millisecond1 = 0;
+				}
+
+				function timer1() {
+  					if ((millisecond1 += 10) == 1000) {
+  					  millisecond1 = 0;
+  					  second1++;
+  					}
+  					if (second1 == 60) {
+  					  second1 = 0;
+  					  minute1++;
+  					}
+				}
+
 				function render() {
 
 					updateSize();
@@ -572,6 +728,47 @@
 						renderer.render( scene, camera );
 
 					}
+
+					//if(tree){
+					//	let t = -50;
+					//	for(let i = 0; i <13; i++) {
+					//		let x = -10;
+					//		let z = t;
+					//		let y = 0;
+					//		let treeClone = tree.clone();
+					//		treeClone.position.set(x,y,z);
+					//		scene.add(treeClone);
+					//		t += 10;
+					//	}
+					//}
+
+					if(vehicle1.position.x < 5 && vehicle1.position.x > -5){
+						if(vehicle1.position.z > -20 && lz < -20){
+							console.log("You Win!")
+							reset();
+							start();
+						}
+					}
+
+					lx = vehicle1.position.x;
+					ly = vehicle1.position.y;
+					lz = vehicle1.position.z; 
+
+					time1.innerHTML = minute + ":" + second + ":" + millisecond;
+
+					if(vehicle2.position.x < 5 && vehicle2.position.x > -5){
+						if(vehicle2.position.z > -20 && lz1 < -20){
+							console.log("You Win!")
+							reset1();
+							start1();
+						}
+					}
+
+					lx1 = vehicle2.position.x;
+					ly1 = vehicle2.position.y;
+					lz1 = vehicle2.position.z; 
+
+					time2.innerHTML = minute1 + ":" + second1 + ":" + millisecond1;
 
 				}
 
