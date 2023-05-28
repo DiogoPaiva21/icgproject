@@ -13,6 +13,48 @@
 		<div id="time2">0:0:0</div>
 		<div id="speed1">0 km/h</div>
 		<div id="speed2">0 km/h</div>
+		<div id="helpl" hidden>
+			<ul>
+				<li>
+					Left Car
+					<ul>
+						<li>
+							<p>W - Acceleration</p>
+						</li>
+						<li>
+							<p>S - Braking</p>	
+						</li>
+						<li>
+							<p>A - Left </p>
+						</li>
+						<li>
+							<p>D - Right</p>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="helpr" hidden>
+			<ul>
+				<li>
+					Right Car
+					<ul>
+						<li>
+							<p>Up - Acceleration</p>
+						</li>
+						<li>
+							<p>Down - Braking</p>	
+						</li>
+						<li>
+							<p>Left - Left </p>
+						</li>
+						<li>
+							<p>Right - Right</p>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
 
 		<style>
 			body {
@@ -29,14 +71,14 @@
 				color: #ffffff;
 				background-color: #990000;
 				position: absolute;
-				top: 0px;
+				bottom: 0px;
 				padding: 5px;
 			}
 			#speed2 {
 				color: #ffffff;
 				background-color: #990000;
 				position: absolute;
-				top: 0px;
+				bottom: 0px;
 				right: 0px;
 				padding: 5px;
 			}
@@ -44,7 +86,7 @@
 				color: #ffffff;
 				background-color: #990000;
 				position: absolute;
-				top: 30px;
+				top: 0px;
 				left: 0px;
 				padding: 5px;
 			}
@@ -52,11 +94,27 @@
 				color: #ffffff;
 				background-color: #990000;
 				position: absolute;
-				top: 30px;
+				top: 0px;
 				right: 0px;
 				padding: 5px;
 			}
-			#t
+			#helpl {
+				color: #ffffff;
+				background-color: #686868;
+				position: absolute;
+				top: 0px;
+				padding: 5px;
+				text-align: left;
+			}
+			#helpr {
+				color: #ffffff;
+				background-color: #686868;
+				position: absolute;
+				top: 0px;
+				right: 0px;
+				padding: 5px;
+				text-align: left;
+			}
 
             a {
 
@@ -500,8 +558,6 @@
 						} else {
 							speed2.innerHTML = (speed < 0 ? '(R) ' : '') + Math.abs(speed).toFixed(1) + ' km/h';
 						}
-					
-						
 					
 						breakingForce = 0;
 						engineForce = 0;
@@ -1088,12 +1144,26 @@
 
 				}
 
+				function onDocumentKeyDown(event) {
+    				switch (event.keyCode) {
+    				    case 72: //h
+							if(document.getElementById("helpl").hidden){
+								document.getElementById("helpl").hidden = false;
+								document.getElementById("helpr").hidden = false;
+							} else {
+								document.getElementById("helpl").hidden = true;
+								document.getElementById("helpr").hidden = true;
+							}		
+					}
+				}
+
 				// Init	
 				init();
 				initPhysics();
 				createObjects();
 				tick();
 				animate();
+				document.addEventListener('keydown', onDocumentKeyDown, false);
 		});
 		</script>
 
