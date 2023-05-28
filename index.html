@@ -245,33 +245,6 @@
 					//const axesHelper = new THREE.AxesHelper( 3 );
 					//scene.add( axesHelper );
 
-					//const glftLoader = new GLTFLoader();
-					//glftLoader.load('Tree1/scene.gltf', function(gltf) {
-					//	gltf.scene.scale.set(1,1,1);
-					//	tree = gltf.scene;
-					//});
-//
-					//const glftLoader1 = new GLTFLoader();
-					//glftLoader1.load('Building1/scene.gltf', function(gltf) {
-					//	gltf.scene.position.set(20,0,0);
-					//	gltf.scene.rotation.y = Math.PI / 2;
-					//	gltf.scene.scale.set(1,1,1);
-					//	scene.add(gltf.scene);
-					//});
-
-					//const fbxLoader = new FBXLoader();
-					//fbxLoader.load('Oak_Tree.fbx', function(object) {
-					//	object.traverse(function(child) {
-					//		if(child.isMesh) {
-					//			child.castShadow = true;
-					//			child.receiveShadow = true;
-					//		}
-					//	});
-					//	object.position.set(-10,0,0);
-					//	object.scale.set(0.025,0.025,0.025);
-					//	scene.add(object);
-					//});
-
 					scene.add(skybox);
 
 					renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -653,6 +626,63 @@
 					syncList.push(sync);
 				}
 
+				function createTree(cir,cih,cor,coh,x,y,z) {
+
+					// Creating a model by grouping basic geometries
+
+					// Cylinder centered at the origin
+
+					const cylinderRadius = cir;
+
+					const cylinderHeight = cih;
+
+					const cylinderGeometry = new THREE.CylinderGeometry(cylinderRadius, cylinderRadius, cylinderHeight, 32);
+
+					const redMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+
+					const cylinder = new THREE.Mesh(cylinderGeometry, redMaterial);
+
+					cylinder.castShadow = true;
+					cylinder.receiveShadow = true;
+
+					// Move base of the cylinder to y = 0
+
+					cylinder.position.y = cylinderHeight / 2.0;
+
+					// Cone
+
+					const baseConeRadius = cor;
+
+					const coneHeight = coh;
+
+					const coneGeometry = new THREE.ConeGeometry(baseConeRadius, coneHeight, 32);
+
+					const greenMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+
+					const cone = new THREE.Mesh(coneGeometry, greenMaterial);
+
+					cone.castShadow = true;
+					cone.receiveShadow = true;
+
+					// Move base of the cone to the top of the cylinder
+
+					cone.position.y = cylinderHeight + coneHeight / 2.0;
+
+					// Tree
+
+					var tree = new THREE.Group();
+
+					tree.add(cylinder);
+
+					tree.add(cone);
+
+					tree.position.x = x;
+
+					tree.position.z = z;
+
+					return tree;
+					}
+
 				function animate() {
 
 					render();
@@ -728,19 +758,6 @@
 						renderer.render( scene, camera );
 
 					}
-
-					//if(tree){
-					//	let t = -50;
-					//	for(let i = 0; i <13; i++) {
-					//		let x = -10;
-					//		let z = t;
-					//		let y = 0;
-					//		let treeClone = tree.clone();
-					//		treeClone.position.set(x,y,z);
-					//		scene.add(treeClone);
-					//		t += 10;
-					//	}
-					//}
 
 					if(vehicle1.position.x < 5 && vehicle1.position.x > -5){
 						if(vehicle1.position.z > -20 && lz < -20){
@@ -904,6 +921,171 @@
 
 					createVehicle(new THREE.Vector3(-2, 0, -20), ZERO_QUATERNION, 1);
 					createVehicle(new THREE.Vector3(2, 0, -20), ZERO_QUATERNION, 0);
+
+					//Tree
+					
+					let t = -50;
+					for(let i = 0; i <14; i++) {
+						let x = -10;
+						let z = t;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t += 10;
+					}
+
+					t = -70;
+					for(let i = 0; i <16; i++) {
+						let x = 10;
+						let z = t;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t += 10;
+					}
+
+					t = 10;
+					for(let i = 0; i <15; i++) {
+						let x = t;
+						let z = -80;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+
+					tree = createTree(1,3,2,3, 6, 0, 90);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, 4, 0, 100);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, 2, 0, 110);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, 0, 0, 120);
+					scene.add(tree);
+
+					t = -6;
+					for(let i = 0; i <6; i++) {
+						let x = t;
+						let z = 125;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+
+					t = 125;
+					for(let i = 0; i <15; i++) {
+						let x = -62;
+						let z = t;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+
+					t = 125;
+					for(let i = 0; i <15; i++) {
+						let x = -62;
+						let z = t;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+
+					t = -62;
+					for(let i = 0; i <7; i++) {
+						let x = t;
+						let z = -23;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+
+					tree = createTree(1,3,2,3, -128, 0, -28);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, -135, 0, -35);
+					scene.add(tree);
+
+					t = -45;
+					for(let i = 0; i <3; i++) {
+						let x = -135;
+						let z = t;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+					
+					tree = createTree(1,3,2,3, -14, 0, 88);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, -25, 0, 95);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, -35, 0, 90);
+					scene.add(tree);
+
+					t = 80;
+					for(let i = 0; i <12; i++) {
+						let x = -38;
+						let z = t;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t -= 10;
+					}
+
+					tree = createTree(1,3,2,3, -41, 0, -40);
+					scene.add(tree);
+					tree = createTree(1,3,2,3, -45, 0, -50);
+					scene.add(tree);
+
+					t = -35;
+					for(let i = 0; i <2; i++) {
+						let x = t;
+						let z = -50;
+						let y = 0;
+						tree = createTree(1,3,2,3, x, y, z);
+						scene.add(tree);
+						t += 10;
+					}
+
+					//Arrows
+
+					var geometry = new THREE.CylinderGeometry(3, 3, 1, 3);
+					var material = new THREE.MeshBasicMaterial( {color: 0xffffff} );
+					var cylinder = new THREE.Mesh( geometry, material );
+					cylinder.position.set(0, -0.49, -30);
+					scene.add( cylinder );
+
+					var c = cylinder.clone()
+					c.position.set(0, -0.49, 50);
+					scene.add( c );
+
+					var c1 = cylinder.clone()
+					c1.position.set(-25, -0.49, 112);
+					// Rotate
+					c1.rotation.y = -Math.PI / 2;
+					scene.add( c1 );
+
+					var c2 = cylinder.clone()
+					c2.position.set(-50, -0.49, 35);
+					// Rotate
+					c2.rotation.y = Math.PI;
+					scene.add( c2 );
+
+					var c3 = cylinder.clone()
+					c3.position.set(-80, -0.49, -40);
+					// Rotate
+					c3.rotation.y = -Math.PI / 2;
+					scene.add( c3 );
+
+					var c4 = cylinder.clone()
+					c4.position.set(-75, -0.49, -66);
+					// Rotate
+					c4.rotation.y = Math.PI / 2;
+					scene.add( c4 );
+
 				}
 
 				// Init	
